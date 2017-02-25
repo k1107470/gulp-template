@@ -22,3 +22,10 @@ gulp.task('script', function() {
         .pipe(uglify())
         .pipe(gulp.dest('./dist/script/'));
 });
+//3.图片的复制
+var imagemin = require('gulp-imagemin');
+gulp.task('images', function() {
+    return gulp.src('src/images/*.*')
+        .pipe(imagemin())
+        .pipe(gulp.dest('dist/images/'))
+})
