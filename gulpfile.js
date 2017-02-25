@@ -28,4 +28,15 @@ gulp.task('images', function() {
     return gulp.src('src/images/*.*')
         .pipe(imagemin())
         .pipe(gulp.dest('dist/images/'))
-})
+});
+//4.html的压缩
+var htmlmin = require('gulp-htmlmin');
+
+gulp.task('htmlmin', function() {
+    return gulp.src('src/*.html')
+        .pipe(htmlmin({
+            collapseWhitespace: true,
+            removeStyleLinkTypeAttributes: true
+        }))
+        .pipe(gulp.dest('dist'));
+});
