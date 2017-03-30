@@ -1,14 +1,30 @@
-'use strict'
+'use strict';
 
 var gulp = require('gulp');
+//0.第三方库的移动,模板移动,字体的移动
+gulp.task('move',function(){
+    gulp.src(['src/lib/**/*.css','src/lib/**/*.js'])
+        .pipe(gulp.dest('dist/lib/'))
+        .pipe(browserSync.stream());
+    gulp.src('src/templates/*')
+        .pipe(gulp.dest('dist/templates/'))
+        .pipe(browserSync.stream());
+    gulp.src('src/font/*')
+        .pipe(gulp.dest('dist/font/'))
+        .pipe(browserSync.stream());
+});
 
-//1.less编译 压缩
+//1.less编译 css压缩
 var less = require('gulp-less');
 var cssnano = require('gulp-cssnano');
 
 gulp.task('style', function() {
-    return gulp.src('src/style/*.less')
+    gulp.src('src/style/*.less')
         .pipe(less())
+        .pipe(cssnano())
+        .pipe(gulp.dest('dist/style/'))
+        .pipe(browserSync.stream());
+    gulp.src('src/style/*.css')
         .pipe(cssnano())
         .pipe(gulp.dest('dist/style/'))
         .pipe(browserSync.stream());
@@ -36,12 +52,19 @@ gulp.task('images', function() {
 var htmlmin = require('gulp-htmlmin');
 
 gulp.task('htmlmin', function() {
-    return gulp.src('src/*.html')
+    gulp.src('src/*.html')
         .pipe(htmlmin({
             collapseWhitespace: true,
             removeStyleLinkTypeAttributes: true
         }))
         .pipe(gulp.dest('dist'))
+        .pipe(browserSync.stream());
+    gulp.src('src/template/*.html')
+        .pipe(htmlmin({
+            collapseWhitespace: true,
+            removeStyleLinkTypeAttributes: true
+        }))
+        .pipe(gulp.dest('dist/template/'))
         .pipe(browserSync.stream());
 });
 
@@ -49,12 +72,14 @@ gulp.task('htmlmin', function() {
 var browserSync = require('browser-sync').create();
 
 // Static server
-gulp.task('server', function() {
+gulp.task('server',['move','style','script','images','htmlmin'], function() {
     browserSync.init({
         server: {
             baseDir: "dist/"
         }
     });
+    gulp.watch('src/lib/**/*', ['move']);
+    gulp.watch('src/templates/*', ['move']);
     gulp.watch('src/style/*.less', ['style']);
     gulp.watch('src/script/*.js', ['script']);
     gulp.watch('src/images/*.*', ['images']);
